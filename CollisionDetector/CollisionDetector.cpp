@@ -11,28 +11,20 @@ using namespace MathUtils;
 
 bool MathUtils::are_equal(double nr1, double nr2)
 {
-    if (abs(nr1 - nr2) < EPSILON)
-        return true;
-
-    return false;
-}
-
-bool MathUtils::comp_points(point pnt1, point pnt2)
-{
-    if (are_equal(pnt1.linie, pnt2.linie) && are_equal(pnt1.coloana, pnt2.coloana) && are_equal(pnt1.adancime, pnt2.adancime))
+    if (fabs(nr1 - nr2) < EPSILON)
         return true;
 
     return false;
 }
 
 
-double MathUtils::magnitude_vector_squared(Vector v1)
+double MathUtils::magnitude_vector_squared(const Vector& v1)
 {
     return v1.x*v1.x + v1.y*v1.y + v1.z*v1.z;
 }
 
 
-Vector MathUtils::vector_to_unit_vector(Vector v)
+Vector MathUtils::vector_to_unit_vector(const Vector& v)
 {
     double magnitude = sqrt(magnitude_vector_squared(v));
     
@@ -48,7 +40,7 @@ Vector MathUtils::vector_to_unit_vector(Vector v)
 }
 
 
-Vector MathUtils::cross_product_vector(Vector v1, Vector v2)
+Vector MathUtils::cross_product_vector(const Vector& v1, const Vector& v2)
 {
     return 
     {
@@ -61,20 +53,9 @@ Vector MathUtils::cross_product_vector(Vector v1, Vector v2)
 }
 
 
-Vector MathUtils::sum_vector(Vector v1, Vector v2)
-{
-    return
-    {
-        v1.x+v2.x,
-
-        v1.y+v2.y,
-
-        v1.z+v2.z
-    };
-}
 
 
-Vector MathUtils::diff_vector(Vector v1, Vector v2)
+Vector MathUtils::diff_vector(const Vector& v1, const Vector& v2)
 {
     return
     {
@@ -87,7 +68,7 @@ Vector MathUtils::diff_vector(Vector v1, Vector v2)
 }
 
 
-Vector MathUtils::scalar_product_vector(double val, Vector v)
+Vector MathUtils::scalar_product_vector(double val, const Vector& v)
 {
     return
     {
@@ -100,7 +81,7 @@ Vector MathUtils::scalar_product_vector(double val, Vector v)
 }
 
 
-double MathUtils::dot_product_vector(Vector v1, Vector v2)
+double MathUtils::dot_product_vector(const Vector& v1, const Vector& v2)
 {
     return v1.x*v2.x + v1.y*v2.y + v1.z*v2.z;
 }
@@ -112,595 +93,225 @@ double MathUtils::pythagoras(double length1, double length2)
 }
 
 
-double MathUtils::dist_two_points(point pnt1, point pnt2)
+double MathUtils::dist_two_points(const point& pnt1, const point& pnt2)
 {
-    double diff_adancime = abs(pnt1.adancime - pnt2.adancime);
+    double diff_depth = abs(pnt1.depth - pnt2.depth);
 
-    double diff_coloana = abs(pnt1.coloana - pnt2.coloana);
+    double diff_column = abs(pnt1.column - pnt2.column);
 
-    double cateta1 = pythagoras(diff_adancime, diff_coloana);
+    double cateta1 = pythagoras(diff_depth, diff_column);
 
-    double diff_linie = abs(pnt1.linie - pnt2.linie);
+    double diff_line = abs(pnt1.line - pnt2.line);
 
-    return pythagoras(cateta1, diff_linie);
-}
-
-
-bool point_inside_rectangle(point pnt1, rectangle rec)
-{
-
-    double lin_max = rec.colt_stanga_sus.linie;
-
-    double lin_min = rec.colt_stanga_jos.linie;
-
-    double col_min = rec.colt_stanga_sus.coloana;
-
-    double col_max = rec.colt_dreapta_jos.coloana;
-
-    if (pnt1.linie >= lin_min && pnt1.linie <= lin_max)
-    {
-        if (pnt1.coloana >= col_min && pnt1.coloana <= col_max)
-            return true;
-    }
-
-    return false;
-}
-
-
-point closest_point_from_rectangle(point pnt1, rectangle rec)
-{
-
-    if (point_inside_rectangle(pnt1, rec))
-        return pnt1;
-
-    else
-    {
-        if (pnt1.linie >= rec.colt_stanga_sus.linie) 
-        {
-            double mij = (rec.colt_stanga_sus.coloana + rec.colt_dreapta_sus.coloana) / 2;
-
-            if (pnt1.coloana <= mij)
-                return rec.colt_stanga_sus;
-
-            else
-                return rec.colt_dreapta_sus;
-        }
-
-        else if (pnt1.linie <= rec.colt_stanga_jos.linie)
-        {
-            double mij = (rec.colt_stanga_jos.coloana + rec.colt_dreapta_jos.coloana) / 2;
-
-            if (pnt1.coloana <= mij)
-                return rec.colt_stanga_jos;
-
-            else
-                return rec.colt_dreapta_jos;
-        }
-
-        else
-        {
-            if (pnt1.coloana <= rec.colt_stanga_sus.coloana)
-            {
-                double mij = (rec.colt_stanga_sus.linie + rec.colt_stanga_jos.linie);
-
-                if (pnt1.linie <= mij)
-                    return rec.colt_stanga_jos;
-
-                else
-                    return rec.colt_stanga_sus;
-            }
-
-            else
-            {
-                double mij = (rec.colt_dreapta_sus.linie + rec.colt_dreapta_jos.linie);
-
-                if (pnt1.linie <= mij)
-                    return rec.colt_dreapta_jos;
-
-                else
-                    return rec.colt_dreapta_sus;
-            }
-        }
-    }
-}
-
-
-point segment_intersect_plane(segment seg, rectangle rec, bool &intersect_plane)
-{
-    Vector u = 
-    {
-        rec.colt_dreapta_sus.linie - rec.colt_stanga_sus.linie,
-
-        rec.colt_dreapta_sus.coloana - rec.colt_stanga_sus.coloana,
-
-        rec.colt_dreapta_sus.adancime - rec.colt_stanga_sus.adancime
-    };
-
-    Vector v = {
-        rec.colt_stanga_jos.linie - rec.colt_stanga_sus.linie,
-
-        rec.colt_stanga_jos.coloana - rec.colt_stanga_sus.coloana,
-
-        rec.colt_stanga_jos.adancime - rec.colt_stanga_sus.adancime
-    };
-
-    Vector n = cross_product_vector(u, v);
-
-    Vector d = 
-    {
-        seg.pnt2.linie - seg.pnt1.linie,
-
-        seg.pnt2.coloana - seg.pnt1.coloana,
-
-        seg.pnt2.adancime - seg.pnt1.adancime
-    };
-
-    Vector w = 
-    {
-        seg.pnt1.linie - rec.colt_stanga_sus.linie,
-
-        seg.pnt1.coloana - rec.colt_stanga_sus.coloana,
-
-        seg.pnt1.adancime - rec.colt_stanga_sus.adancime
-    };
-
-    double val1 = dot_product_vector(w, n);
-    
-    double val2 = dot_product_vector(d, n);
-
-    if(are_equal(val2, 0))
-        throw std::runtime_error("Cannot divide a number zero");
-
-    double t = (val1 / val2)*(-1);
-
-
-    if (t >= 0 && t <= 1)
-    {
-        intersect_plane = true;
-
-        d = scalar_product_vector(t, d);
-
-        return
-        {
-            seg.pnt1.linie+d.x,
-
-            seg.pnt1.coloana+d.y,
-
-            seg.pnt1.adancime+d.z
-        };
-    }
-
-    else
-        intersect_plane = false;
-
-    return
-    {
-        0,
-        0,
-        0
-    };
-}
-
-
-point projection_point_to_plane(point pnt, rectangle rec)
-{
-    Vector u =
-    {
-        rec.colt_dreapta_sus.linie - rec.colt_stanga_sus.linie,
-
-        rec.colt_dreapta_sus.coloana - rec.colt_stanga_sus.coloana,
-
-        rec.colt_dreapta_sus.adancime - rec.colt_stanga_sus.adancime
-    };
-
-    Vector v =
-    {
-        rec.colt_stanga_jos.linie - rec.colt_stanga_sus.linie,
-
-        rec.colt_stanga_jos.coloana - rec.colt_stanga_sus.coloana,
-
-        rec.colt_stanga_jos.adancime - rec.colt_stanga_sus.adancime
-    };
-
-    Vector n = cross_product_vector(u, v);
-
-    Vector d =
-    {
-        pnt.linie-rec.colt_stanga_sus.linie,
-
-        pnt.coloana-rec.colt_stanga_sus.coloana,
-
-        pnt.adancime-rec.colt_stanga_sus.adancime
-    };
-
-    double val1 = dot_product_vector(d, n);
-
-    if(are_equal(magnitude_vector_squared(n), 0))
-        throw std::runtime_error("Cannot divide number by zero");
-
-    val1 /= magnitude_vector_squared(n);
-
-    n = scalar_product_vector(val1, n);
-
-    return
-    {
-        pnt.linie-n.x,
-
-        pnt.coloana-n.y,
-
-        pnt.adancime-n.z
-    };
-}
-
-
-point projection_point_to_segment(point pnt, segment seg, bool &on_segment)
-{
-    Vector v = 
-    {
-        seg.pnt2.linie - seg.pnt1.linie,
-
-        seg.pnt2.coloana - seg.pnt1.coloana,
-
-        seg.pnt2.adancime - seg.pnt1.adancime
-    };
-
-    Vector w = 
-    {
-        pnt.linie - seg.pnt1.linie,
-
-        pnt.coloana - seg.pnt1.coloana,
-
-        pnt.adancime - seg.pnt1.adancime
-    };
-
-    double val1 = dot_product_vector(w, v);
-
-    double val2 = dot_product_vector(v, v);
-
-    if(are_equal(val2, 0))
-        throw std::runtime_error("Cannot divide number by zero");
-
-    double t = val1 / val2;
-
-    if (are_equal(t, 0)) 
-    {
-        on_segment = true;
-
-        return seg.pnt1;
-    }
-
-    else if (are_equal(t, 1))
-    {
-        on_segment = true;
-
-        return seg.pnt2;
-    }
-
-    else
-    {
-        if (t >= 0 && t <= 1)
-            on_segment = true;
-
-        else
-            on_segment = false;
-
-        v = scalar_product_vector(t, v);
-
-        point ras = 
-        {
-            seg.pnt1.linie + v.x,
-
-            seg.pnt1.coloana + v.y,
-
-            seg.pnt1.adancime + v.z
-        };
-
-        return ras;
-    }
-}
-
-
-solutions_of_equation MathUtils::solve_equation_grade2(double a, double b, double c, bool &exista_sol)
-{
-    solutions_of_equation ras;
-    if (are_equal(a, 0))
-        throw std::runtime_error("Cannot divide number by zero");
-
-    double delta = b * b - 4 * a * c;
-
-    if (delta < 0) 
-        exista_sol = false;
-
-    else
-    {
-        delta = sqrt(delta);
-
-        double sol1 = (-b + delta) / (2 * a);
-
-        double sol2 = (-b - delta) / (2 * a);
-
-        ras.sol1 = sol1;
-
-        ras.sol2 = sol2;
-
-        if (sol1 >= 0 && sol1 <= 1) 
-        {
-            ras.sol1 = sol1;
-
-            exista_sol = true;
-
-            if (sol2 >= 0 && sol2 <= 1)
-                ras.sol2 = sol2;
-
-            else
-                ras.sol2 = sol1;
-        }
-
-        else 
-        {
-            if (sol2 >= 0 && sol2 <= 1) 
-            {
-                ras.sol2 = sol2;
-
-                ras.sol1 = sol2;
-
-                exista_sol = true;
-            }
-
-            else
-                exista_sol = false;
-        }
-    }
-    return ras;
-}
-
-
-void find_point_on_segment_with_right_distance(point pnt, segment seg, double dist, bool &exista_pnt,
-    point &p_out1, point &p_out2)
-{
-    Vector d = 
-    {
-        seg.pnt2.linie - seg.pnt1.linie,
-
-        seg.pnt2.coloana - seg.pnt1.coloana,
-
-        seg.pnt2.adancime - seg.pnt1.adancime
-    };
-
-    Vector copie_d = 
-    {
-        seg.pnt2.linie - seg.pnt1.linie,
-
-        seg.pnt2.coloana - seg.pnt1.coloana,
-
-        seg.pnt2.adancime - seg.pnt1.adancime
-    };
-
-    Vector v = 
-    {
-        seg.pnt1.linie - pnt.linie,
-
-        seg.pnt1.coloana - pnt.coloana,
-
-        seg.pnt1.adancime - pnt.adancime
-    };
-
-    double a = dot_product_vector(d, d);
-
-    double b = dot_product_vector(v, d)*2;
-
-    double c = dot_product_vector(v, v) - dist * dist;
-
-    solutions_of_equation ras;
-
-    bool exista_sol = false;
-
-    ras = solve_equation_grade2(a, b, c, exista_sol);
-
-    exista_pnt = exista_sol;
-
-    d = scalar_product_vector(ras.sol1, d);
-
-    p_out1 = 
-    {
-        pnt.linie + d.x,
-
-        pnt.coloana + d.y,
-
-        pnt.adancime + d.z 
-    };
-
-    copie_d = scalar_product_vector(ras.sol2, copie_d);
-
-    p_out2 = 
-    {
-        pnt.linie + copie_d.x,
-
-        pnt.coloana + copie_d.y,
-
-        pnt.adancime + copie_d.z
-    };
+    return pythagoras(cateta1, diff_line);
 }
 
 
 bool intersect_sphere_sphere(Sphere sph1, Sphere sph2)
 {
-    double dist = dist_two_points(sph1.centru_sfera, sph2.centru_sfera);
+    double dist = dist_two_points(sph1.center_sphere, sph2.center_sphere);
 
-    if (dist <= sph1.raza_sfera + sph2.raza_sfera)
+    if (dist <= sph1.radius_sphere + sph2.radius_sphere)
         return true;
 
     return false;
 }
 
 
-bool intersect_parallelipiped_parallelipiped(Parallelepiped prl1, Parallelepiped prl2)
+bool intersect_parallelepiped_parallelepiped(Parallelepiped prl1, Parallelepiped prl2)
 {
-    for (int i = 0; i < 6; i++)
+    Vector v[15], v1[3], v2[3];
+
+    v1[0] = prl1.u, v1[1] = prl1.v, v1[2] = prl1.w;
+    v2[0] = prl2.u, v2[1] = prl2.v, v2[2] = prl2.w;
+
+    double length;
+    int cnt = 0;
+
+    for (int i = 0; i < 3; i++)
     {
-        for (int j = 0; j < 12; j++) 
+        for (int j = 0; j < 3; j++)
         {
-            bool intersect_plane = false;
+            Vector aux= cross_product_vector(v1[i], v2[j]);
 
-            point ras;
-            ras = segment_intersect_plane(prl1.seg[j], prl2.faces_paral[i], intersect_plane);
+            length = sqrt(magnitude_vector_squared(aux));
 
-            if (intersect_plane)
-            {
-                point closest_to_rectangle = closest_point_from_rectangle(ras, prl2.faces_paral[i]);
-
-                if (comp_points(closest_to_rectangle, ras))
-                    return true;
-            }
+            if (!are_equal(length, 0))
+                v[cnt++] = aux;
         }
     }
+    for (int i = 0; i < 3; i++)
+    {
+        length = sqrt(magnitude_vector_squared(v1[i]));
 
-    return false;
+        if (!are_equal(length, 0))
+            v[cnt++] = v1[i];
+
+        length = sqrt(magnitude_vector_squared(v2[i]));
+
+        if (!are_equal(length, 0))
+            v[cnt++] = v2[i];
+    }
+
+    for (int i = 0; i < cnt; i++)
+        v[i] = vector_to_unit_vector(v[i]);
+
+    Vector C1 =
+    {
+        prl1.P.line,
+        prl1.P.column,
+        prl1.P.depth
+    };
+
+    Vector C2 =
+    {
+        prl2.P.line,
+        prl2.P.column,
+        prl2.P.depth
+    };
+
+    for (int i = 0; i < cnt; i++)
+    {
+        double c1 = dot_product_vector(C1, v[i]);
+
+        double r1 = prl1.hx*fabs(dot_product_vector(prl1.u, v[i])) +
+            prl1.hy*fabs(dot_product_vector(prl1.v, v[i])) +
+            prl1.hz*fabs(dot_product_vector(prl1.w, v[i]));
+
+        double c2 = dot_product_vector(C2, v[i]);
+
+        double r2 = prl2.hx*fabs(dot_product_vector(prl2.u, v[i])) +
+            prl2.hy*fabs(dot_product_vector(prl2.v, v[i])) +
+            prl2.hz*fabs(dot_product_vector(prl2.w, v[i]));
+
+        if (fabs(c1 - c2) > r1 + r2)
+            return false;
+    }
+    return true;
 }
 
 
 bool intersect_sphere_parallelipied(Sphere sph, Parallelepiped prl)
 {
-
-    for (int i = 0; i < 6; i++)
+    Vector d =
     {
-        point ras;
+        sph.center_sphere.line - prl.P.line,
+        sph.center_sphere.column - prl.P.column,
+        sph.center_sphere.depth - prl.P.depth
+    };
+    
+    double cx = dot_product_vector(d, prl.u);
 
-        ras = projection_point_to_plane(sph.centru_sfera, prl.faces_paral[i]);
+    double cy = dot_product_vector(d, prl.v);
+    
+    double cz = dot_product_vector(d, prl.w);
 
-        point ras_fin;
+    double qx, qy, qz;
 
-        ras_fin = closest_point_from_rectangle(ras, prl.faces_paral[i]);
+    if (cx < -prl.hx)
+        qx = -prl.hx;
+    else if (cx > prl.hx)
+        qx = prl.hx;
+    else
+        qx = cx;
 
-        double dist = dist_two_points(ras_fin, sph.centru_sfera);
+    if (cy < -prl.hy)
+        qy = -prl.hy;
+    else if (cy > prl.hy)
+        qy = prl.hy;
+    else
+        qy = cy;
 
-        if (dist <= sph.raza_sfera)
-            return true;
-    }
+    if (cz < -prl.hz)
+        qz = -prl.hz;
+    else if (cz > prl.hz)
+        qz = prl.hz;
+    else
+        qz = cz;
 
+    double dx, dy, dz, dist;
+
+    dx = cx - qx;
+    dy = cy - qy;
+    dz = cz - qz;
+    dist = dx * dx + dy * dy + dz * dz;
+
+    if (dist <= sph.radius_sphere*sph.radius_sphere)
+        return true; 
     return false;
 }
 
 
-bool intersect_sphere_cilinder(Sphere sph, Cylinder cyl)
+bool intersect_sphere_cylinder(Sphere sph, Cylinder cyl)
 {
-    bool on_segment = false;
+    Vector cyl_axis_vector = {
 
-    point ras;
-
-    ras = projection_point_to_segment(sph.centru_sfera, cyl.axa_Cylinder, on_segment);
-
-    if (on_segment == true)
+        cyl.high_face_center.line - cyl.low_face_center.line,
+        cyl.high_face_center.column - cyl.low_face_center.column,
+        cyl.high_face_center.depth - cyl.low_face_center.depth
+    };
+    
+    double length_axis = dist_two_points(cyl.low_face_center, cyl.high_face_center);
+    
+    if (are_equal(length_axis, 0))
     {
-        double dist = dist_two_points(sph.centru_sfera, ras);
-
-        if (dist <= sph.raza_sfera + cyl.raza_Cylinder)
+        double centerDist = dist_two_points(sph.center_sphere, cyl.low_face_center);
+        
+        if (centerDist <= (sph.radius_sphere + cyl.radius_cylinder))
             return true;
+        return false;
+    }
+    Vector unit_axis_direction = vector_to_unit_vector(cyl_axis_vector);
+
+    Vector w = {
+        sph.center_sphere.line - cyl.low_face_center.line,
+        sph.center_sphere.column - cyl.low_face_center.column,
+        sph.center_sphere.depth - cyl.low_face_center.depth
+    };
+
+    double t = dot_product_vector(w, unit_axis_direction);
+
+    Vector new_unit_axis;
+
+    new_unit_axis = scalar_product_vector(t, unit_axis_direction);
+
+    Vector q;
+
+    q = diff_vector(w, new_unit_axis);
+
+    double p = sqrt(magnitude_vector_squared(q));
+
+    double shortest_distance;
+
+    if (0 <= t && t <= length_axis)
+    {
+        if (p <= cyl.radius_cylinder)
+            shortest_distance = 0;
+        else
+            shortest_distance = p - cyl.radius_cylinder;
+
+    }
+    else if (t < 0)
+    {
+        if (p <= cyl.radius_cylinder)
+            shortest_distance = -t;
+        else
+            shortest_distance = sqrt((p - cyl.radius_cylinder)*(p - cyl.radius_cylinder) + t * t);
     }
     else
     {
-        bool intersect_circle = false;
+        double s = t - length_axis;
 
-        point ras1;
-
-        rectangle plane = 
-        {
-            cyl.low_face.nord_point,
-
-            cyl.low_face.east_point,
-
-            cyl.low_face.south_point,
-
-            cyl.low_face.west_point
-        };
-
-        point highest_sphere_point =
-        {
-            sph.centru_sfera.linie + sph.raza_sfera,
-
-            sph.centru_sfera.coloana,
-
-            sph.centru_sfera.adancime
-        };
-
-        point lowest_sphere_point = 
-        {
-            sph.centru_sfera.linie - sph.raza_sfera,
-
-            sph.centru_sfera.coloana,
-
-            sph.centru_sfera.adancime
-        };
-
-        segment sphere_axis = 
-        {
-            highest_sphere_point,
-
-            lowest_sphere_point
-        };
-        
-        ras1 = segment_intersect_plane(sphere_axis, plane, intersect_circle);
-
-        if (intersect_circle)
-        {
-            segment seg = 
-            {
-                ras1,
-                cyl.low_face.center
-            };
-
-            bool exista_pnt = false;
-
-            point p1_out, p2_out;
-
-            find_point_on_segment_with_right_distance(sph.centru_sfera, seg, sph.raza_sfera, exista_pnt, p1_out, p2_out);
-
-            if (dist_two_points(ras1, p1_out) + cyl.raza_Cylinder >= dist_two_points(ras1, cyl.low_face.center))
-                return true;
-
-            if (dist_two_points(ras1, p2_out) + cyl.raza_Cylinder >= dist_two_points(ras1, cyl.low_face.center))
-                return true;
-        }
+        if (p <= cyl.radius_cylinder)
+            shortest_distance = s;
         else
-        {
-            intersect_circle = false;
-
-            rectangle plane = 
-            {
-                cyl.high_face.nord_point,
-
-                cyl.high_face.east_point,
-
-                cyl.high_face.south_point,
-
-                cyl.high_face.west_point
-            };
-
-            ras1 = segment_intersect_plane(sphere_axis, plane, intersect_circle); 
-
-            if (intersect_circle)
-            {
-                segment seg = 
-                {
-                    ras1,
-
-                    cyl.high_face.center
-                };
-
-                bool exista_pnt = false;
-
-                point p1_out, p2_out;
-
-                find_point_on_segment_with_right_distance(sph.centru_sfera, seg, sph.raza_sfera, exista_pnt, p1_out, p2_out);
-
-                if (dist_two_points(ras1, p1_out) + cyl.raza_Cylinder >= dist_two_points(ras1, cyl.low_face.center))
-                    return true;
-
-                if (dist_two_points(ras1, p2_out) + cyl.raza_Cylinder >= dist_two_points(ras1, cyl.low_face.center))
-                    return true;
-            }
-        }
+            shortest_distance = sqrt((p - cyl.radius_cylinder)*(p - cyl.radius_cylinder) + s * s);
     }
+
+    double sep = shortest_distance - sph.radius_sphere;
+
+    if (sep <= 0)
+        return true;
 
     return false;
 }
@@ -714,20 +325,20 @@ bool intersect_cylinder_cylinder(Cylinder cyl1, Cylinder cyl2)
 
     a[0] =
     {
-        cyl1.axa_Cylinder.pnt1.linie - cyl1.axa_Cylinder.pnt2.linie,
+        cyl1.axis_cylinder.pnt1.line - cyl1.axis_cylinder.pnt2.line,
 
-        cyl1.axa_Cylinder.pnt1.coloana - cyl1.axa_Cylinder.pnt2.coloana,
+        cyl1.axis_cylinder.pnt1.column - cyl1.axis_cylinder.pnt2.column,
 
-        cyl1.axa_Cylinder.pnt1.adancime - cyl1.axa_Cylinder.pnt2.adancime
+        cyl1.axis_cylinder.pnt1.depth - cyl1.axis_cylinder.pnt2.depth
     };
 
     a[1] =
     {
-        cyl2.axa_Cylinder.pnt1.linie - cyl2.axa_Cylinder.pnt2.linie,
+        cyl2.axis_cylinder.pnt1.line - cyl2.axis_cylinder.pnt2.line,
 
-        cyl2.axa_Cylinder.pnt1.coloana - cyl2.axa_Cylinder.pnt2.coloana,
+        cyl2.axis_cylinder.pnt1.column - cyl2.axis_cylinder.pnt2.column,
 
-        cyl2.axa_Cylinder.pnt1.adancime - cyl2.axa_Cylinder.pnt2.adancime
+        cyl2.axis_cylinder.pnt1.depth - cyl2.axis_cylinder.pnt2.depth
     };
 
     if (!are_equal(0, magnitude_vector_squared(cross_product_vector(a[0], a[1]))))
@@ -742,20 +353,20 @@ bool intersect_cylinder_cylinder(Cylinder cyl1, Cylinder cyl2)
 
         Vector p1=
         {
-            cyl1.axa_Cylinder.pnt1.linie,
+            cyl1.axis_cylinder.pnt1.line,
 
-            cyl1.axa_Cylinder.pnt1.coloana,
+            cyl1.axis_cylinder.pnt1.column,
             
-            cyl1.axa_Cylinder.pnt1.adancime
+            cyl1.axis_cylinder.pnt1.depth
         };
 
         Vector p2 =
         {
-            cyl1.axa_Cylinder.pnt2.linie,
+            cyl1.axis_cylinder.pnt2.line,
 
-            cyl1.axa_Cylinder.pnt2.coloana,
+            cyl1.axis_cylinder.pnt2.column,
 
-            cyl1.axa_Cylinder.pnt2.adancime
+            cyl1.axis_cylinder.pnt2.depth
         };
 
         Vector unit_axis = vector_to_unit_vector(a[0]);
@@ -775,7 +386,7 @@ bool intersect_cylinder_cylinder(Cylinder cyl1, Cylinder cyl2)
         if (product*product > 1)
             throw std::domain_error("Can not take square root of a negative number, look in function intersect_cylinder_cylinder, first sqrt");
 
-        double r = cyl1.raza_Cylinder * sqrt(1 - product * product);
+        double r = cyl1.radius_cylinder * sqrt(1 - product * product);
 
         double min_cyl1 = std::min(p1_val, p2_val) - r;
 
@@ -783,20 +394,20 @@ bool intersect_cylinder_cylinder(Cylinder cyl1, Cylinder cyl2)
 
         p1 =
         {
-            cyl2.axa_Cylinder.pnt1.linie,
+            cyl2.axis_cylinder.pnt1.line,
 
-            cyl2.axa_Cylinder.pnt1.coloana,
+            cyl2.axis_cylinder.pnt1.column,
 
-            cyl2.axa_Cylinder.pnt1.adancime
+            cyl2.axis_cylinder.pnt1.depth
         };
 
         p2 =
         {
-            cyl2.axa_Cylinder.pnt2.linie,
+            cyl2.axis_cylinder.pnt2.line,
 
-            cyl2.axa_Cylinder.pnt2.coloana,
+            cyl2.axis_cylinder.pnt2.column,
 
-            cyl2.axa_Cylinder.pnt2.adancime
+            cyl2.axis_cylinder.pnt2.depth
         };
 
         unit_axis = vector_to_unit_vector(a[1]);
@@ -816,7 +427,7 @@ bool intersect_cylinder_cylinder(Cylinder cyl1, Cylinder cyl2)
         if (product*product > 1)
             throw std::domain_error("Can not take square root of a negative number, look in function intersect_cylinder_cylinder, second sqrt");
 
-        r = cyl2.raza_Cylinder * sqrt(1 - product * product);
+        r = cyl2.radius_cylinder * sqrt(1 - product * product);
 
         double min_cyl2 = std::min(p1_val, p2_val) - r;
 
@@ -852,4 +463,3 @@ int main()
     }
     return 0;
 }
-
