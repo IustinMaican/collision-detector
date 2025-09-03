@@ -1,29 +1,12 @@
 #include "MathUtils.h"
 
-/*---------------------------------------------------------------------------------------------------------------------------------*/
 
-bool point_inside_rectangle(point pnt1, rectangle rec);
+bool intersect_sphere_sphere(const Sphere& sph1, const Sphere& sph2);
 
-point closest_point_from_rectangle(point pnt, rectangle rec);
+bool intersect_parallelepiped_parallelepiped(const Parallelepiped& prl1, const Parallelepiped& prl2);
 
-point segment_intersect_plane(segment seg, rectangle rec, bool &intersect_plane);
+bool intersect_sphere_cylinder(const Sphere& sph, const Cylinder& cyl);
 
-point projection_point_to_plane(point pnt, rectangle rec);
+bool intersect_sphere_parallelipied(const Sphere& sph, const Parallelepiped& prl);
 
-point projection_point_to_segment(point pnt, segment seg, bool &on_segment);
-
-void find_point_on_segment_with_right_distance(point pnt, segment seg, double dist, bool &exista_pnt, point &p_out1, point &p_out2);
-
-/*---------------------------------------------------------------------------------------------------------------------------------*/
-
-bool intersect_sphere_sphere(Sphere sph1, Sphere sph2);
-
-bool intersect_parallelipiped_parallelipiped(Parallelepiped prl1, Parallelepiped prl2);
-
-bool intersect_sphere_cilinder(Sphere sph, Cylinder cyl);
-
-bool intersect_sphere_parallelipied(Sphere sph, Parallelepiped prl);
-
-bool intersect_cylinder_cylinder(Cylinder cyl1, Cylinder cyl2); // (Separating Axis Theorem)
-
-/*---------------------------------------------------------------------------------------------------------------------------------*/
+bool intersect_cylinder_cylinder(const Cylinder& cyl1, const Cylinder& cyl2);
